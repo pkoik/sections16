@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Xsolla Web Shop Ecosystem</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="ecosystem" aria-labelledby="ecosystem-title">
+        <header class="ecosystem__intro">
+          <p class="ecosystem__eyebrow">
+            We built the operating system for D2C in mobile gaming
+          </p>
+          <h1 id="ecosystem-title" class="ecosystem__title">
+            Xsolla Web Shop
+            <span>Ecosystem</span>
+          </h1>
+        </header>
+
+        <div class="ecosystem__component">
+          <button
+            class="ecosystem__primary-category is-active"
+            type="button"
+            aria-pressed="true"
+            aria-controls="feature-panel"
+            data-category="web-shop"
+          >
+            Web Shop
+          </button>
+
+          <div class="ecosystem__card">
+            <div
+              class="ecosystem__category-tabs"
+              role="group"
+              aria-label="Other ecosystem categories"
+            >
+              <button
+                class="category-tab"
+                type="button"
+                aria-pressed="false"
+                aria-controls="feature-panel"
+                tabindex="-1"
+                data-category="engage"
+              >
+                <img src="./assets/engage.svg" alt="" width="24" height="24" />
+                <span>Engage</span>
+              </button>
+              <button
+                class="category-tab"
+                type="button"
+                aria-pressed="false"
+                aria-controls="feature-panel"
+                tabindex="-1"
+                data-category="monetize"
+              >
+                <img src="./assets/monetize.svg" alt="" width="24" height="24" />
+                <span>Monetize</span>
+              </button>
+              <button
+                class="category-tab"
+                type="button"
+                aria-pressed="false"
+                aria-controls="feature-panel"
+                tabindex="-1"
+                data-category="operate"
+              >
+                <img src="./assets/operate.svg" alt="" width="24" height="24" />
+                <span>Operate</span>
+              </button>
+            </div>
+
+            <div class="ecosystem__feature-scroll" data-tab-scroller>
+              <div
+                id="feature-tabs"
+                class="ecosystem__feature-tabs"
+                role="tablist"
+                aria-label="Web Shop features"
+              >
+                <button
+                  id="tab-shop-builder"
+                  class="feature-tab is-active"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="feature-panel"
+                  tabindex="0"
+                  data-feature="shop-builder"
+                >
+                  Shop Builder
+                </button>
+                <button
+                  id="tab-catalog"
+                  class="feature-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="feature-panel"
+                  tabindex="-1"
+                  data-feature="catalog"
+                >
+                  Catalog
+                </button>
+                <button
+                  id="tab-login"
+                  class="feature-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="feature-panel"
+                  tabindex="-1"
+                  data-feature="login"
+                >
+                  Login
+                </button>
+                <button
+                  id="tab-payments"
+                  class="feature-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="feature-panel"
+                  tabindex="-1"
+                  data-feature="payments"
+                >
+                  Payments (Pay Station)
+                </button>
+                <button
+                  id="tab-mobile-account"
+                  class="feature-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="feature-panel"
+                  tabindex="-1"
+                  data-feature="mobile-account"
+                >
+                  Mobile Account
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="feature-panel"
+              class="ecosystem__feature-panel"
+              role="tabpanel"
+              aria-labelledby="tab-shop-builder"
+              tabindex="0"
+              aria-live="polite"
+            >
+              <div class="ecosystem__copy">
+                <h2 id="feature-title">Shop Builder</h2>
+                <p id="feature-description">
+                  Launch a Web Shop that looks and feels like your game, with
+                  ready-made templates and customization that doesn’t require code.
+                </p>
+              </div>
+
+              <div
+                id="rive-slot"
+                class="ecosystem__rive-slot"
+                data-rive-slot
+                data-rive-status="loading"
+                data-rive-supported="true"
+                data-category="web-shop"
+                data-feature="shop-builder"
+                aria-label="Rive content placeholder for Shop Builder"
+              >
+                <canvas
+                  id="ecosystem-rive"
+                  data-rive-file="./assets/webshopecosystem_01_v04.riv"
+                  data-rive-renderer="canvas"
+                  data-rive-artboard="01MAIN"
+                  data-rive-state-machine="State Machine 1"
+                  data-rive-view-model="VM01"
+                  data-rive-category="web-shop"
+                  data-rive-state="shop-builder"
+                ></canvas>
+
+                <div id="rive-file-loader" class="rive-file-loader" hidden>
+                  <p>Choose the ecosystem Rive file to preview the animation.</p>
+                  <label class="rive-file-loader__button">
+                    Choose .riv file
+                    <input id="rive-file-input" type="file" accept=".riv" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./vendor/rive-2.39.1.js"></script>
+    <script src="./rive-integration.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

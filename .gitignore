@@ -1,0 +1,7 @@
+# Archived Rive iterations retained locally
+assets/webshopecosystem_01_v01.riv
+assets/webshopecosystem_01_v02.riv
+assets/webshopecosystem_01_v03.riv
+
+# Inactive renderer retained locally
+vendor/rive-webgl2*
