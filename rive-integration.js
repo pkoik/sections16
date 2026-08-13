@@ -432,6 +432,24 @@
     });
   }
 
+  async function initializeFromUrl() {
+    setStatus("loading");
+
+    try {
+      const response = await fetch(CONFIG.file, { cache: "force-cache" });
+      if (!response.ok) {
+        throw new Error(
+          `Rive file request failed with status ${response.status}.`,
+        );
+      }
+
+      initialize(await response.arrayBuffer());
+    } catch (error) {
+      setStatus("error", error.message);
+      console.error("Ecosystem Rive file failed to load:", error);
+    }
+  }
+
   function cleanup() {
     disposed = true;
     activationToken += 1;
@@ -470,7 +488,7 @@
     setStatus("file-required");
     fileLoader.hidden = false;
   } else {
-    initialize(CONFIG.file);
+    initializeFromUrl();
   }
 
   window.ecosystemRive = Object.freeze({
