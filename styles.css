@@ -275,6 +275,7 @@ button:focus-visible,
   min-width: 0;
   overflow: hidden;
   background: var(--color-surface-secondary);
+  clip-path: inset(0);
   contain: paint;
   isolation: isolate;
 }
@@ -385,21 +386,34 @@ button:focus-visible,
 
   .ecosystem__feature-panel {
     display: block;
+    margin-top: 40px;
+  }
+
+  .ecosystem__copy {
+    min-height: 145px;
+  }
+
+  .ecosystem__copy h2 {
+    font-size: 32px;
+    line-height: 28.8px;
   }
 
   .ecosystem__copy p {
-    max-width: 520px;
+    max-width: 416px;
+    font-size: 14px;
+    line-height: 18.2px;
   }
 
   .ecosystem__rive-slot {
-    height: 335px;
-    margin-top: 70px;
-    aspect-ratio: auto;
+    height: auto;
+    max-height: 335px;
+    margin-top: 40px;
+    aspect-ratio: 672 / 335;
   }
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 599px) {
   .ecosystem {
     min-height: 738px;
     padding: 40px 0;
@@ -413,7 +427,8 @@ button:focus-visible,
 
   .ecosystem__eyebrow {
     margin-bottom: 10px;
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 14px;
   }
 
   .ecosystem__title {
@@ -446,8 +461,8 @@ button:focus-visible,
   .category-tab {
     gap: 6px;
     padding: 0 6px;
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 12px;
+    line-height: 14px;
   }
 
   .category-tab img {
@@ -496,13 +511,67 @@ button:focus-visible,
   }
 
   .ecosystem__rive-slot {
+    --rive-mobile-overscan-x: 0px;
+
     height: auto;
     margin-top: 20px;
     aspect-ratio: 296 / 177;
   }
 
   .ecosystem__rive-slot canvas {
-    transform: translate3d(-6.081%, 0, 0);
+    width: calc(100% + var(--rive-mobile-overscan-x));
+    transform: translate3d(calc(-1 * var(--rive-mobile-overscan-x)), 0, 0);
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="buy-button"]
+    ) {
+    --rive-mobile-overscan-x: 16px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="shop-builder"],
+      [data-feature="catalog"],
+      [data-feature="login"]
+    ) {
+    --rive-mobile-overscan-x: 12px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="mobile-account"],
+      [data-feature="loyalty-program"],
+      [data-feature="social-quests"],
+      [data-feature="discord-bot"],
+      [data-feature="subscriptions"],
+      [data-feature="sdk"],
+      [data-feature="mmp"]
+    ) {
+    --rive-mobile-overscan-x: 16px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="referral-program"]
+    ) {
+    --rive-mobile-overscan-x: 20px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="xsolla-liveops"]
+    ) {
+    --rive-mobile-overscan-x: 24px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="payments"],
+      [data-feature="analytics"]
+    ) {
+    --rive-mobile-overscan-x: 28px;
+  }
+
+  .ecosystem__rive-slot:is(
+      [data-feature="offerwall"]
+    ) {
+    --rive-mobile-overscan-x: 32px;
   }
 
 }

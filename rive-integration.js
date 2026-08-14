@@ -2,7 +2,7 @@
   "use strict";
 
   const CONFIG = Object.freeze({
-    file: "./assets/webshopecosystem_01_v04.riv",
+    file: "./assets/webshopecosystem_01_v06.riv",
     renderer: "canvas",
     stateMachine: "State Machine 1",
     enumName: "Enum01",
@@ -147,7 +147,8 @@
   });
 
   const DEFAULT_FEATURE = "shop-builder";
-  const LAYOUT_REFERENCE_WIDTH = 592;
+  const MOBILE_LAYOUT_REFERENCE_WIDTH = 620;
+  const TABLET_LAYOUT_REFERENCE_WIDTH = 672;
 
   const canvas = document.querySelector("#ecosystem-rive");
   const slot = document.querySelector("#rive-slot");
@@ -190,13 +191,28 @@
     });
   }
 
+  function getLayoutScaleFactor() {
+    const layoutWidth = slot.getBoundingClientRect().width;
+
+    if (!window.matchMedia("(max-width: 599px)").matches) {
+      if (!window.matchMedia("(max-width: 1439px)").matches) return 1;
+
+      return Math.min(1, layoutWidth / TABLET_LAYOUT_REFERENCE_WIDTH);
+    }
+
+    return Math.min(
+      1,
+      layoutWidth / MOBILE_LAYOUT_REFERENCE_WIDTH,
+    );
+  }
+
   function syncPlayerLayout(force = false) {
-    if (!player) return;
+    if (!player || !player.readyForPlaying || !player.activeArtboard) return;
 
     const { width, height } = canvas.getBoundingClientRect();
     if (!width || !height) return;
     const dpr = window.devicePixelRatio || 1;
-    const layoutScaleFactor = Math.min(1, width / LAYOUT_REFERENCE_WIDTH);
+    const layoutScaleFactor = getLayoutScaleFactor();
     const sizeChanged =
       Math.abs(width - lastCanvasSize.width) >= 0.5 ||
       Math.abs(height - lastCanvasSize.height) >= 0.5 ||
@@ -334,6 +350,7 @@
 
   function applyFeature(featureId, { replay = false } = {}) {
     pendingFeature = featureId;
+    slot.dataset.feature = featureId;
     const binding = FEATURE_BINDINGS[featureId];
     const isSupported = Boolean(binding);
     setSupported(isSupported);
@@ -358,6 +375,7 @@
     enumProperty.value = binding.enumValue;
     activeFeature = featureId;
     canvas.dataset.riveState = featureId;
+    syncPlayerLayout(true);
     const token = ++activationToken;
 
     requestAnimationFrame(() => {
@@ -414,10 +432,7 @@
       layout: new rive.Layout({
         fit: rive.Fit.Layout,
         alignment: rive.Alignment.Center,
-        layoutScaleFactor: Math.min(
-          1,
-          canvas.getBoundingClientRect().width / LAYOUT_REFERENCE_WIDTH,
-        ),
+        layoutScaleFactor: getLayoutScaleFactor(),
       }),
       onLoad: () => {
         try {
