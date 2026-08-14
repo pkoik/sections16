@@ -163,6 +163,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 let activeCategoryId = "web-shop";
 let activeFeatureId = "shop-builder";
+const DEFAULT_INITIAL_FEATURE_ID = "shop-builder";
 
 function renderCategoryButtons() {
   for (const button of categoryButtons) {
@@ -340,15 +341,17 @@ featureTabs.addEventListener("keydown", (event) => {
 
 window.addEventListener("hashchange", () => {
   const featureId = window.location.hash.slice(1);
-  activateFeature(featuresById.has(featureId) ? featureId : "shop-builder", {
-    updateUrl: false,
-    bringIntoView: true,
-  });
+  activateFeature(
+    featuresById.has(featureId) ? featureId : DEFAULT_INITIAL_FEATURE_ID,
+    {
+      updateUrl: false,
+      bringIntoView: true,
+    },
+  );
 });
 
-const initialFeature = window.location.hash.slice(1);
-activateFeature(featuresById.has(initialFeature) ? initialFeature : "shop-builder", {
-  updateUrl: false,
+activateFeature(DEFAULT_INITIAL_FEATURE_ID, {
+  replaceHash: true,
   bringIntoView: true,
   animate: false,
 });

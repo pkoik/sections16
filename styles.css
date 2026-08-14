@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "Pilat";
+  src: url("./fonts/Pilat-Regular.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Aktiv Grotesk";
+  src: url("./fonts/AktivGrotesk-W-Regular.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 :root {
   --color-background: #141d1f;
   --color-surface: #1b2628;
@@ -259,13 +275,17 @@ button:focus-visible,
   min-width: 0;
   overflow: hidden;
   background: var(--color-surface-secondary);
+  contain: paint;
+  isolation: isolate;
 }
 
 .ecosystem__rive-slot canvas {
   display: block;
   width: 100%;
   height: 100%;
+  backface-visibility: hidden;
   opacity: 1;
+  transform: translateZ(0);
   transition: opacity 160ms ease;
 }
 
@@ -402,7 +422,7 @@ button:focus-visible,
   }
 
   .ecosystem__component {
-    width: min(calc(100vw - 32px), 328px);
+    width: calc(100vw - 32px);
     margin: 40px auto 0;
   }
 
@@ -479,6 +499,10 @@ button:focus-visible,
     height: auto;
     margin-top: 20px;
     aspect-ratio: 296 / 177;
+  }
+
+  .ecosystem__rive-slot canvas {
+    transform: translate3d(-6.081%, 0, 0);
   }
 
 }

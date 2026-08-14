@@ -146,8 +146,8 @@
     }),
   });
 
-  const ARTBOARD_SIZE = Object.freeze({ width: 749, height: 335 });
   const DEFAULT_FEATURE = "shop-builder";
+  const LAYOUT_REFERENCE_WIDTH = 592;
 
   const canvas = document.querySelector("#ecosystem-rive");
   const slot = document.querySelector("#rive-slot");
@@ -167,6 +167,7 @@
   let resizeFrame = 0;
   let resizeObserver = null;
   let dprQuery = null;
+  let lastCanvasSize = Object.freeze({ width: 0, height: 0, dpr: 0 });
   let disposed = false;
 
   function setStatus(status, message = "") {
@@ -189,27 +190,35 @@
     });
   }
 
-  function syncPlayerLayout() {
+  function syncPlayerLayout(force = false) {
     if (!player) return;
 
     const { width, height } = canvas.getBoundingClientRect();
     if (!width || !height) return;
+    const dpr = window.devicePixelRatio || 1;
+    const layoutScaleFactor = Math.min(1, width / LAYOUT_REFERENCE_WIDTH);
+    const sizeChanged =
+      Math.abs(width - lastCanvasSize.width) >= 0.5 ||
+      Math.abs(height - lastCanvasSize.height) >= 0.5 ||
+      dpr !== lastCanvasSize.dpr;
 
-    const needsProportionalFit =
-      width < ARTBOARD_SIZE.width - 0.5 ||
-      height < ARTBOARD_SIZE.height - 0.5;
-    const nextFit = needsProportionalFit ? rive.Fit.Contain : rive.Fit.Layout;
-
-    if (player.layout.fit !== nextFit) {
+    if (
+      player.layout.fit !== rive.Fit.Layout ||
+      Math.abs(player.layout.layoutScaleFactor - layoutScaleFactor) >= 0.001
+    ) {
       player.layout = new rive.Layout({
-        fit: nextFit,
+        fit: rive.Fit.Layout,
         alignment: rive.Alignment.Center,
+        layoutScaleFactor,
       });
-
-      if (needsProportionalFit) player.resetArtboardSize();
+      force = true;
     }
 
-    slot.dataset.riveFit = needsProportionalFit ? "contain" : "layout";
+    if (!force && !sizeChanged) return;
+
+    lastCanvasSize = Object.freeze({ width, height, dpr });
+    slot.dataset.riveFit = "layout";
+    slot.dataset.riveLayoutScale = layoutScaleFactor.toFixed(3);
     player.resizeDrawingSurfaceToCanvas();
   }
 
@@ -320,7 +329,7 @@
     slot.dataset.riveArtboard = categoryBinding.artboard;
     slot.dataset.riveViewModel = categoryBinding.viewModel;
     slot.dataset.riveCategory = categoryId;
-    syncPlayerLayout();
+    syncPlayerLayout(true);
   }
 
   function applyFeature(featureId, { replay = false } = {}) {
@@ -387,6 +396,7 @@
     setStatus("loading");
     fileLoader.hidden = true;
     disposed = false;
+    lastCanvasSize = Object.freeze({ width: 0, height: 0, dpr: 0 });
 
     const sourceParameter =
       source instanceof ArrayBuffer ? { buffer: source } : { src: source };
@@ -404,6 +414,10 @@
       layout: new rive.Layout({
         fit: rive.Fit.Layout,
         alignment: rive.Alignment.Center,
+        layoutScaleFactor: Math.min(
+          1,
+          canvas.getBoundingClientRect().width / LAYOUT_REFERENCE_WIDTH,
+        ),
       }),
       onLoad: () => {
         try {
