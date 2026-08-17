@@ -563,6 +563,7 @@ button:focus-visible,
     height: auto;
     margin-top: 20px;
     aspect-ratio: 296 / 177;
+    touch-action: pan-y;
   }
 
   .ecosystem__rive-slot canvas {
@@ -578,6 +579,8 @@ button:focus-visible,
         var(--rive-mobile-offset-y),
         0
       );
+    pointer-events: none;
+    touch-action: pan-y;
   }
 
   .ecosystem__rive-slot[data-feature="shop-builder"] {

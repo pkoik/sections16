@@ -80,6 +80,11 @@ All tablet states not listed above use the default centered Rive layout.
 The remaining mobile features retain their centered scale and position, with
 only protective overscan where declared in `styles.css`.
 
+The mobile Rive canvas is intentionally display-only (`pointer-events: none`)
+and its slot uses `touch-action: pan-y`. This lets a vertical swipe that starts
+over the animation continue scrolling the page. Feature selection remains in
+the accessible HTML category and feature tabs above the canvas.
+
 ### CSS controls used by the integration
 
 - `--rive-layout-scale` — feature multiplier applied to the calculated Rive layout scale
