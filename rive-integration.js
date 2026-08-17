@@ -192,18 +192,46 @@
   }
 
   function getLayoutScaleFactor() {
-    const layoutWidth = slot.getBoundingClientRect().width;
+    const configuredWidthAdjustment = Number.parseFloat(
+      getComputedStyle(slot).getPropertyValue("--rive-layout-width-adjustment"),
+    );
+    const widthAdjustment = Number.isFinite(configuredWidthAdjustment)
+      ? configuredWidthAdjustment
+      : 0;
+    const layoutWidth = Math.max(
+      1,
+      slot.getBoundingClientRect().width - widthAdjustment,
+    );
+    const configuredScale = Number.parseFloat(
+      getComputedStyle(slot).getPropertyValue("--rive-layout-scale"),
+    );
+    const featureScale =
+      Number.isFinite(configuredScale) && configuredScale > 0
+        ? configuredScale
+        : 1;
 
     if (!window.matchMedia("(max-width: 599px)").matches) {
       if (!window.matchMedia("(max-width: 1439px)").matches) return 1;
 
-      return Math.min(1, layoutWidth / TABLET_LAYOUT_REFERENCE_WIDTH);
+      return (
+        Math.min(1, layoutWidth / TABLET_LAYOUT_REFERENCE_WIDTH) * featureScale
+      );
     }
 
-    return Math.min(
-      1,
-      layoutWidth / MOBILE_LAYOUT_REFERENCE_WIDTH,
+    return (
+      Math.min(1, layoutWidth / MOBILE_LAYOUT_REFERENCE_WIDTH) * featureScale
     );
+  }
+
+  function getLayoutAlignment() {
+    if (window.matchMedia("(max-width: 599px)").matches) {
+      if (slot.dataset.feature === "payments") {
+        return rive.Alignment.BottomCenter;
+      }
+
+    }
+
+    return rive.Alignment.Center;
   }
 
   function syncPlayerLayout(force = false) {
@@ -213,6 +241,7 @@
     if (!width || !height) return;
     const dpr = window.devicePixelRatio || 1;
     const layoutScaleFactor = getLayoutScaleFactor();
+    const layoutAlignment = getLayoutAlignment();
     const sizeChanged =
       Math.abs(width - lastCanvasSize.width) >= 0.5 ||
       Math.abs(height - lastCanvasSize.height) >= 0.5 ||
@@ -220,11 +249,12 @@
 
     if (
       player.layout.fit !== rive.Fit.Layout ||
+      player.layout.alignment !== layoutAlignment ||
       Math.abs(player.layout.layoutScaleFactor - layoutScaleFactor) >= 0.001
     ) {
       player.layout = new rive.Layout({
         fit: rive.Fit.Layout,
-        alignment: rive.Alignment.Center,
+        alignment: layoutAlignment,
         layoutScaleFactor,
       });
       force = true;
@@ -235,6 +265,7 @@
     lastCanvasSize = Object.freeze({ width, height, dpr });
     slot.dataset.riveFit = "layout";
     slot.dataset.riveLayoutScale = layoutScaleFactor.toFixed(3);
+    slot.dataset.riveAlignment = layoutAlignment;
     player.resizeDrawingSurfaceToCanvas();
   }
 

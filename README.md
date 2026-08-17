@@ -9,7 +9,7 @@ across the four ecosystem categories from the supplied Figma file.
 - `styles.css` — responsive layouts for 360, 768, 1440, and 1800 px references
 - `script.js` — category and feature state, keyboard navigation, and deep links
 - `rive-integration.js` — Rive loading, View Model binding, triggers, and responsive resizing
-- `assets/` — exact category icons plus `webshopecosystem_01_v04.riv`
+- `assets/` — exact category icons, the active `webshopecosystem_01_v06.riv`, and the retained v04 source
 - `vendor/` — pinned Rive Canvas runtime 2.39.1 and its WASM files
 
 Serve this directory with a static web server for automatic Rive loading. If
@@ -18,15 +18,80 @@ browsers do not allow JavaScript to fetch neighboring local files.
 
 ## Responsive frame mapping
 
-- Up to 767 px: 328 px component with a 296 x 177 px Rive panel
-- 768-1439 px: 704 px component with a 672 x 335 px Rive panel
+- Up to 599 px: component width is `100vw - 32px`; the Rive panel uses the 296:177 mobile ratio
+- 600-1439 px: component width is `min(100vw - 64px, 704px)`; the Rive panel uses the 672:335 tablet ratio
 - 1440-1799 px: 1136 px component with a 749 x 335 px Rive panel
 - 1800 px and wider: 1434 px component with a 749 x 335 px Rive panel
 
 These caps mirror the four Figma reference frames. The supplied feature
-artboards have a fixed native size of 749 x 335 px, so the integration keeps
-`Fit.Layout` at that native desktop size and uses centered proportional
-`Fit.Contain` rendering for the smaller tablet and mobile panels.
+artboards have a fixed native size of 749 x 335 px. The integration uses
+`Fit.Layout` at every size; tablet and mobile apply a proportional
+`layoutScaleFactor` based on 672 px and 620 px reference widths respectively.
+
+## Responsive Rive tuning handoff
+
+Desktop rendering at 1440 px and wider is intentionally unchanged. Tablet and
+mobile corrections are feature-specific because the visible content is not
+centered identically inside every Rive artboard.
+
+`rive-integration.js` calculates the normal responsive `layoutScaleFactor` from
+the slot width, then multiplies it by the optional CSS variable
+`--rive-layout-scale`. It re-applies the layout after slot, viewport, or device
+pixel-ratio changes and calls `resizeDrawingSurfaceToCanvas()`.
+
+Horizontal corrections expand the canvas by the same amount that it is shifted.
+This keeps the canvas's right edge attached to the Rive panel and prevents a
+left correction from introducing new right-edge clipping. The Rive panel itself
+remains the clipping boundary (`overflow: hidden`).
+
+### Tablet adjustments (600-1439 px)
+
+| Feature | Scale | Horizontal correction | Vertical correction |
+| --- | ---: | ---: | ---: |
+| Payments | 96% | 20 px left | centered |
+| Mobile Account | 92% | centered | 8 px down |
+| Social Quests | default | 34 px left | centered |
+| SDK | default | 60 px left | centered |
+| LiveOps | default | 24 px left | centered |
+| Analytics | default | 40 px left | centered |
+| MMP | default | 40 px left | centered |
+
+All tablet states not listed above use the default centered Rive layout.
+
+### Mobile adjustments (up to 599 px)
+
+| Category / feature | Scale | Horizontal correction | Vertical correction / alignment |
+| --- | ---: | ---: | --- |
+| Web Shop / Shop Builder | default | centered | 8 px down |
+| Web Shop / Catalog | 98% | 6 px left | centered |
+| Web Shop / Login | default | centered | 6 px down |
+| Web Shop / Payments | 90% | protected overscan | bottom-center alignment |
+| Web Shop / Mobile Account | 93% | 4 px left; slot uses card side padding | 8 px down |
+| Engage / Social Quests | 90% | 6 px left | 34 px down |
+| Monetize / Discord Bot | default | protected overscan | 30 px down |
+| Monetize / Buy Button | default | protected overscan | 30 px down |
+| Monetize / Offerwall | default | protected overscan | 30 px down |
+| Monetize / Subscriptions | default | 8 px left | 16 px down |
+| Monetize / SDK | default | 12 px left | 16 px down |
+| Operate / LiveOps | 95% | protected overscan | centered |
+| Operate / Analytics | default | protected overscan | centered |
+| Operate / MMP | 95% | 8 px left | centered |
+
+The remaining mobile features retain their centered scale and position, with
+only protective overscan where declared in `styles.css`.
+
+### CSS controls used by the integration
+
+- `--rive-layout-scale` — feature multiplier applied to the calculated Rive layout scale
+- `--rive-layout-width-adjustment` — excludes temporary slot expansion from scale calculation
+- `--rive-mobile-overscan-x` — extra mobile drawing width used to expose edge artwork
+- `--rive-mobile-shift-left` — guarded mobile left correction
+- `--rive-mobile-offset-y` — mobile vertical correction
+- `--rive-tablet-shift-left` — guarded tablet left correction
+
+When adding another exception, scope it with `data-feature` inside the matching
+media query. Do not change the shared canvas position globally: that would move
+states whose artwork is already correct.
 
 ## Feature state IDs
 
